@@ -2422,12 +2422,12 @@
         </div>
         <div>
           <div class="brand-title">Kas Luhurian</div>
-          <div class="brand-subtitle">Bendahara Pesantren • Kas & Syahriyah</div>
+          <div class="brand-subtitle">Catatan Keuangan Santri</div>
         </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 0.45rem;">
-        <button type="button" class="btn-icon" id="btn-header-theme-mode" title="Ganti Cepat Light Mode / OLED Dark Mode" style="border-radius: 999px; padding: 0.35rem 0.62rem;">
-          🌙
+      <div style="display: flex; align-items: center; gap: 0.4rem;">
+        <button type="button" class="btn-icon" id="btn-header-panduan" title="Panduan Penggunaan & Istilah Aplikasi" style="border-radius: 999px; padding: 0.35rem 0.68rem; font-weight: 700; color: var(--primary); white-space: nowrap;">
+          📖 Panduan
         </button>
 
         <button type="button" class="header-status" id="header-user-pill" title="Ketuk untuk buka menu Pengaturan">
@@ -2885,6 +2885,17 @@
       <section id="tab-profil" class="tab-pane">
         <div class="section-header">
           <h2 class="section-title">Pengaturan Kas & Cloud Pesantren</h2>
+        </div>
+
+        <!-- PANDUAN PENGGUNAAN & ISTILAH APLIKASI -->
+        <div class="settings-group" style="border: 1.5px solid var(--primary); background: var(--primary-light);">
+          <h3 style="color: var(--primary);">📖 Panduan Penggunaan & Istilah Aplikasi</h3>
+          <p class="settings-desc" style="margin-bottom: 0.75rem;">
+            Pelajari arti setiap istilah status kas, fitur tombol, dan langkah pemakaian aplikasi untuk bendahara pesantren.
+          </p>
+          <button type="button" class="btn btn-primary" id="btn-settings-open-panduan" style="width: 100%;">
+            📖 Buka Panduan Lengkap & Kamus Istilah
+          </button>
         </div>
 
         <!-- PENGATURAN UTAMA: JUMLAH KAS WAJIB IURAN PER-BULAN (BERSIH TANPA TEKS KETERANGAN PANJANG) -->
@@ -3554,6 +3565,61 @@
       <div class="modal-footer" style="margin-top: 0.85rem;">
         <button type="button" class="btn btn-primary" id="btn-share-preview-img">📤 Bagikan Gambar</button>
         <button type="button" class="btn btn-outline" data-close-modal="modal-receipt-preview">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PANDUAN PENGGUNAAN & KAMUS ISTILAH APLIKASI -->
+  <div class="modal-backdrop" id="modal-panduan">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">📖 Panduan & Istilah Kas Luhurian</h3>
+          <p style="font-size: 0.73rem; color: var(--text-muted);">Petunjuk pemakaian aplikasi untuk Bendahara Pesantren</p>
+        </div>
+        <button type="button" class="btn-icon" data-close-modal="modal-panduan">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.8rem; line-height: 1.5;">
+        <!-- Bagian 1: Kamus Istilah Status Santri -->
+        <div style="padding: 0.85rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px;">
+          <strong style="display: block; font-size: 0.86rem; color: var(--primary); margin-bottom: 0.45rem;">1. Arti Istilah Status pada Santri</strong>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <div><span class="status-badge lunas">Lunas</span> — Santri sudah membayar penuh iuran kas wajib pada bulan tersebut dan tidak memiliki sisa tanggungan bulan sebelumnya.</div>
+            <div><span class="status-badge parsial">Parsial</span> — Santri baru membayar sebagian dari kas wajib bulan ini (misalnya wajib Rp 100.000, baru membayar Rp 50.000). Sisa kekurangannya otomatis tercatat sebagai piutang.</div>
+            <div><span class="status-badge piutang">Piutang</span> — Santri belum membayar iuran bulan ini atau masih memiliki tanggungan kekurangan dari bulan-bulan sebelumnya kepada pesantren.</div>
+            <div><span class="status-badge nonaktif">Non-Aktif</span> — Tagihan bulanan santri dimatikan sehingga tidak dikenakan biaya kas wajib pada bulan tersebut.</div>
+          </div>
+        </div>
+
+        <!-- Bagian 2: Istilah Keuangan & Navigasi -->
+        <div style="padding: 0.85rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px;">
+          <strong style="display: block; font-size: 0.86rem; color: var(--primary); margin-bottom: 0.45rem;">2. Istilah Keuangan & Tombol Utama</strong>
+          <ul style="padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.32rem;">
+            <li><strong>Kas Wajib:</strong> Nominal iuran rutin bulanan per santri yang diatur di menu <em>Pengaturan</em>.</li>
+            <li><strong>Piutang Lalu:</strong> Akumulasi kekurangan pembayaran santri dari bulan-bulan sebelumnya yang otomatis terbawa ke bulan berjalan.</li>
+            <li><strong>Total Piutang:</strong> Gabungan sisa tagihan bulan ini ditambah <em>Piutang Lalu</em> yang harus dilunasi santri.</li>
+            <li><strong>Laporan Wali:</strong> Lembar rekapitulasi khusus per santri (Tahunan 12 bulan atau Beberapa Bulan) untuk dikirimkan ke Wali Santri sebagai bukti lunas atau rincian piutang.</li>
+            <li><strong>Opsi Nol-kan:</strong> Fitur untuk me-nol-kan tagihan bulan berjalan, memutihkan seluruh piutang santri, atau mereset saldo kas tanpa menghapus daftar nama santri.</li>
+          </ul>
+        </div>
+
+        <!-- Bagian 3: Langkah Penggunaan Harian Bendahara -->
+        <div style="padding: 0.85rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px;">
+          <strong style="display: block; font-size: 0.86rem; color: var(--primary); margin-bottom: 0.45rem;">3. Cara Penggunaan Langkah demi Langkah</strong>
+          <ol style="padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.38rem;">
+            <li><strong>Atur Kas Wajib Bulanan:</strong> Buka menu <strong>Pengaturan</strong> di pojok kanan bawah, tentukan nominal <em>Jumlah Kas Wajib Per-Bulan</em>, lalu tekan <strong>Simpan</strong>.</li>
+            <li><strong>Masukkan Data Santri:</strong> Di menu <strong>Daftar Santri</strong>, tekan <strong>+ Input Nama Semua Santri</strong> untuk menempelkan seluruh daftar nama sekaligus (1 baris 1 nama) atau menyalin otomatis dari bulan sebelumnya. Nama otomatis tersusun urut abjad (A–Z).</li>
+            <li><strong>Catat Pembayaran Santri:</strong> Ketuk kartu nama santri (atau tekan tombol <strong>✓ Set Lunas</strong> langsung di kartu). Jika membayar sebagian, ketuk kartu santri lalu pilih <strong>Parsial</strong> atau ketik nominal yang dibayar, kemudian tekan <strong>Simpan Catatan Iuran Bulan Ini</strong>.</li>
+            <li><strong>Catat Pengeluaran Pondok:</strong> Buka menu <strong>Pengeluaran</strong> (atau tekan tombol <strong>+</strong> di tengah bawah), pilih kategori pembelian (seperti <em>Beras & Konsumsi</em> atau <em>Listrik & Air</em>), isi nominal serta foto nota bila ada, lalu simpan.</li>
+            <li><strong>Pantau Statistik & Lacak Piutang:</strong> Buka menu <strong>Riwayat</strong> untuk melihat grafik <strong>🍩 Bulatan</strong> atau <strong>📊 Batang</strong>. Ketuk kartu <strong>⚠️ Piutang Santri</strong> atau item riwayat santri untuk langsung melompat ke data santri bersangkutan.</li>
+            <li><strong>Cetak & Bagikan Laporan:</strong> Tekan <strong>📄 Laporan Keuangan</strong> di kartu dompet atas untuk memilih laporan <em>Perbulan</em>, <em>Pertahun</em>, atau <em>Perminggu</em>, lalu unduh ke Excel, PDF, atau kirim gambarnya ke WhatsApp.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal="modal-panduan" style="width: 100%;">Mengerti & Tutup Panduan</button>
       </div>
     </div>
   </div>
@@ -6590,6 +6656,8 @@
 
       document.getElementById('btn-open-zero-modal').addEventListener('click', openZeroResetModal);
       document.getElementById('btn-settings-open-zero-modal').addEventListener('click', openZeroResetModal);
+      document.getElementById('btn-header-panduan').addEventListener('click', () => openModal('modal-panduan'));
+      document.getElementById('btn-settings-open-panduan').addEventListener('click', () => openModal('modal-panduan'));
 
       // 1. Nol-kan Tagihan Bulan Ini (Faktor Liburan Pondok)
       document.getElementById('btn-zero-current-month-holiday').addEventListener('click', async () => {
@@ -7152,23 +7220,11 @@
         document.querySelectorAll('#theme-selector .theme-swatch-btn').forEach(btn => {
           btn.classList.toggle('active', btn.getAttribute('data-theme') === themeName);
         });
-        const modeBtn = document.getElementById('btn-header-theme-mode');
-        if (modeBtn) {
-          modeBtn.textContent = themeName === 'dark' ? '☀️' : '🌙';
-        }
+
         StoragePrefs.set('theme', themeName);
       }
 
-      document.getElementById('btn-header-theme-mode').addEventListener('click', () => {
-        const current = StoragePrefs.get('theme', 'purple');
-        if (current === 'dark') {
-          applyTheme(StoragePrefs.get('last_light_theme', 'purple'));
-          showToast('Mode Terang Aktif');
-        } else {
-          applyTheme('dark');
-          showToast('Mode Gelap (OLED) Aktif');
-        }
-      });
+
 
       document.querySelectorAll('#theme-selector .theme-swatch-btn').forEach(btn => {
         btn.addEventListener('click', () => {
