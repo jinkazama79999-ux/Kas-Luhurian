@@ -29,25 +29,23 @@ jobs:
           mkdir -p www
           cp index.html www/index.html
           npm init -y
-          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/app@6
           npx cap init "Kas Luhurian" "com.luhurian.kas" --web-dir www
           npx cap add android
-          npx cap copy
+          npx cap sync android
 
-      - name: Pasang Logo Kas Luhurian sebagai Ikon APK Android
+      - name: Pasang Logo Utuh (Tanpa Terpotong Adaptive Icon)
         run: |
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
           python3 - << 'PY'
-          import re, base64
+          import re, base64, glob
           html = open("index.html", "r", encoding="utf-8").read()
           m = re.search(r'id="app-logo"[^>]*src="data:image/[^;]+;base64,([^"]+)"', html)
-          if not m:
-              m = re.search(r'href="data:image/[^;]+;base64,([^"]+)"', html)
           if m:
               img_bytes = base64.b64decode(m.group(1))
-              import glob
               for p in glob.glob("android/app/src/main/res/mipmap-*/ic_launcher*.png"):
                   open(p, "wb").write(img_bytes)
-              print("Berhasil memasang logo Kas Luhurian ke ikon APK")
+              print("Berhasil memasang logo utuh ke seluruh mipmap APK")
           PY
 
       - name: Build Debug APK
