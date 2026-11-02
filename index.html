@@ -6828,10 +6828,161 @@
       document.getElementById('btn-open-expense-sheet').addEventListener('click', () => openInPageReportSheet('expense'));
       document.getElementById('btn-close-report-sheet').addEventListener('click', closeInPageReportSheet);
 
+      function buildCleanExcelWorkbookHtml(data) {
+        const scope = data.scope || 'global';
+        const isSantriTable = scope === 'santri' || scope === 'wali_santri';
+
+        let colHeaders = [];
+        if (scope === 'wali_santri') {
+          colHeaders = ['No', 'Bulan', 'Status', 'Keterangan Pembayaran / Piutang', 'Kas Wajib', 'Sudah Dibayar', 'Sisa Piutang', 'Akumulasi Piutang'];
+        } else if (scope === 'santri') {
+          colHeaders = ['No', 'Periode', 'Asrama / Kamar', 'Nama Santri & Status', 'Kas Wajib', 'Dibayar Bulan Ini', 'Piutang Lalu', 'Total Sisa Piutang'];
+        } else {
+          colHeaders = ['No', 'Tanggal', 'Kategori / Pos', 'Deskripsi Transaksi', 'Qty', 'Pemasukan', 'Pengeluaran', 'Saldo'];
+        }
+
+        const headerCellsHtml = colHeaders.map((h, idx) => {
+          const align = idx === 0 || (idx === 4 && !isSantriTable) ? 'center' : (idx >= 4 ? 'right' : 'left');
+          return `<th style="background-color:#e2e8f0; color:#0f172a; font-weight:bold; border:1px solid #475569; padding:8px; text-align:${align};">${escapeHtml(h)}</th>`;
+        }).join('');
+
+        const rowsHtml = data.rows.length === 0
+          ? `<tr><td colspan="8" style="border:1px solid #94a3b8; padding:14px; text-align:center; color:#64748b;">Belum ada data transaksi pada periode yang dipilih.</td></tr>`
+          : data.rows.map((r, i) => {
+              const bgRow = i % 2 === 1 ? '#f8fafc' : '#ffffff';
+              const col5Val = isSantriTable ? formatRp(r.hs) : r.qty;
+              const col5Align = isSantriTable ? 'right' : 'center';
+              return `
+                <tr style="background-color:${bgRow};">
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; text-align:center;">${r.no}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; white-space:nowrap;">${escapeHtml(r.date)}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; font-weight:bold;">${escapeHtml(r.categoryOrKamar)}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px;">${escapeHtml(r.description)}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; text-align:${col5Align};">${col5Val}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; text-align:right; color:#059669; font-weight:bold;">${r.kredit > 0 ? formatRp(r.kredit) : '-'}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; text-align:right; color:#dc2626; font-weight:bold;">${r.debit > 0 ? formatRp(r.debit) : '-'}</td>
+                  <td style="border:1px solid #94a3b8; padding:6px 8px; text-align:right; color:#0f172a; font-weight:bold;">${formatRp(r.saldo)}</td>
+                </tr>`;
+            }).join('');
+
+        const box4Display = scope === 'wali_santri' ? (data.statusSummaryText || '-') : formatRp(data.totalTunggakan);
+
+        return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="UTF-8">
+  <!--[if gte mso 9]>
+  <xml>
+    <x:ExcelWorkbook>
+      <x:ExcelWorksheets>
+        <x:ExcelWorksheet>
+          <x:Name>Laporan Kas Luhurian</x:Name>
+          <x:WorksheetOptions>
+            <x:DisplayGridlines/>
+          </x:WorksheetOptions>
+        </x:ExcelWorksheet>
+      </x:ExcelWorksheets>
+    </x:ExcelWorkbook>
+  </xml>
+  <![endif]-->
+</head>
+<body style="font-family:Calibri, Arial, sans-serif; font-size:11pt; color:#0f172a;">
+  <table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%; font-family:Calibri, Arial, sans-serif;">
+    <colgroup>
+      <col width="45">
+      <col width="115">
+      <col width="150">
+      <col width="340">
+      <col width="95">
+      <col width="135">
+      <col width="135">
+      <col width="145">
+    </colgroup>
+    <tr>
+      <td colspan="8" style="background-color:#3A1045; color:#ffffff; font-size:14pt; font-weight:bold; text-align:center; padding:10px; border:1px solid #3A1045;">
+        PESANTREN LUHUR BAITUL HIKMAH — KAS LUHURIAN
+      </td>
+    </tr>
+    <tr>
+      <td colspan="8" style="background-color:#eef2ff; color:#1e1b4b; font-size:12pt; font-weight:bold; text-align:center; padding:7px; border:1px solid #cbd5e1;">
+        ${escapeHtml(data.title)}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5" style="background-color:#f8fafc; color:#334155; font-size:10pt; padding:6px 8px; border:1px solid #cbd5e1;">
+        ${escapeHtml(data.subtitle)}
+      </td>
+      <td colspan="3" style="background-color:#f8fafc; color:#334155; font-size:10pt; text-align:right; padding:6px 8px; border:1px solid #cbd5e1;">
+        <strong>Bendahara:</strong> ${escapeHtml(data.issuer)} | <strong>Dicetak:</strong> ${escapeHtml(data.datePrinted)}
+      </td>
+    </tr>
+    <tr><td colspan="8" style="border:none; height:8px;"></td></tr>
+    <tr>
+      <td colspan="2" style="background-color:#ecfdf5; border:1px solid #6ee7b7; padding:6px 8px; font-size:9pt; color:#065f46; font-weight:bold; text-transform:uppercase;">
+        ${escapeHtml(data.box1Label || 'Total Pemasukan')}
+      </td>
+      <td colspan="2" style="background-color:#fef2f2; border:1px solid #fca5a5; padding:6px 8px; font-size:9pt; color:#991b1b; font-weight:bold; text-transform:uppercase;">
+        ${escapeHtml(data.box2Label || 'Total Pengeluaran')}
+      </td>
+      <td colspan="2" style="background-color:#eef2ff; border:1px solid #a5b4fc; padding:6px 8px; font-size:9pt; color:#3730a3; font-weight:bold; text-transform:uppercase;">
+        ${escapeHtml(data.box3Label || 'Saldo Akhir Kas')}
+      </td>
+      <td colspan="2" style="background-color:#fffbeb; border:1px solid #fcd34d; padding:6px 8px; font-size:9pt; color:#92400e; font-weight:bold; text-transform:uppercase;">
+        ${escapeHtml(data.box4Label || 'Total Piutang Santri')}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" style="background-color:#ecfdf5; border:1px solid #6ee7b7; padding:8px; font-size:12pt; color:#059669; font-weight:bold;">
+        ${formatRp(data.totalKredit)}
+      </td>
+      <td colspan="2" style="background-color:#fef2f2; border:1px solid #fca5a5; padding:8px; font-size:12pt; color:#dc2626; font-weight:bold;">
+        ${formatRp(data.totalDebit)}
+      </td>
+      <td colspan="2" style="background-color:#eef2ff; border:1px solid #a5b4fc; padding:8px; font-size:12pt; color:#4f46e5; font-weight:bold;">
+        ${formatRp(data.totalSaldo)}
+      </td>
+      <td colspan="2" style="background-color:#fffbeb; border:1px solid #fcd34d; padding:8px; font-size:12pt; color:#d97706; font-weight:bold;">
+        ${escapeHtml(box4Display)}
+      </td>
+    </tr>
+    <tr><td colspan="8" style="border:none; height:8px;"></td></tr>
+    <tr>
+      ${headerCellsHtml}
+    </tr>
+    ${rowsHtml}
+    <tr style="background-color:#f1f5f9; font-weight:bold;">
+      <td colspan="5" style="border:1px solid #475569; padding:8px; text-align:right; color:#0f172a;">
+        TOTAL AKUMULASI
+      </td>
+      <td style="border:1px solid #475569; padding:8px; text-align:right; color:#059669;">
+        ${formatRp(data.totalKredit)}
+      </td>
+      <td style="border:1px solid #475569; padding:8px; text-align:right; color:#dc2626;">
+        ${formatRp(data.totalDebit)}
+      </td>
+      <td style="border:1px solid #475569; padding:8px; text-align:right; color:#4f46e5;">
+        ${formatRp(data.totalSaldo)}
+      </td>
+    </tr>
+    <tr><td colspan="8" style="border:none; height:12px;"></td></tr>
+    <tr>
+      <td colspan="5" style="border:none; font-size:9pt; color:#64748b; vertical-align:top;">
+        Catatan: Seluruh nominal dalam mata uang Rupiah (IDR).<br>
+        Kas Luhurian — Sistem Manajemen Keuangan Pesantren Luhur Baitul Hikmah
+      </td>
+      <td colspan="3" style="border:none; text-align:center; font-size:10pt; color:#0f172a; vertical-align:top;">
+        Bendahara Pesantren,<br><br><br>
+        <strong><u>${escapeHtml(data.issuer)}</u></strong>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+      }
+
       document.getElementById('btn-export-excel-sheet').addEventListener('click', async () => {
         const data = buildReportData(state.reportSheetScope || 'global');
-        const htmlTable = document.getElementById('printable-paper-container').innerHTML;
-        const blob = new Blob(['\ufeff<html><head><meta charset="UTF-8"></head><body>' + htmlTable + '</body></html>'], {
+        const excelHtml = '\ufeff' + buildCleanExcelWorkbookHtml(data);
+        const blob = new Blob([excelHtml], {
           type: 'application/vnd.ms-excel;charset=utf-8;'
         });
         await universalSaveOrExportFile({
