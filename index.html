@@ -4506,8 +4506,12 @@
 
       function getCloudRootDocRef(overrideDocId = null) {
         if (!tryInitFirebase() || !fbFirestore) return null;
-        const docId = overrideDocId || (state.currentUser && state.currentUser.uid ? state.currentUser.uid : 'pondok_luhurian_main');
-        return fbFirestore.collection('pesantren_kas').doc(docId);
+        const docId = overrideDocId || (state.currentUser && state.currentUser.uid ? state.currentUser.uid : null);
+        if (docId && docId !== 'pondok_luhurian_main') {
+          // Sesuai dengan Firestore Rules: match /users/{userId}/{document=**}
+          return fbFirestore.collection('users').doc(docId);
+        }
+        return fbFirestore.collection('pesantren_kas').doc('pondok_luhurian_main');
       }
 
       async function cloudSaveSettings(settingsObj) {
